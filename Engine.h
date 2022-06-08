@@ -1,6 +1,10 @@
 #pragma once
 #include <string>
 #include "SpriteType.h"
+#include "SDL.h"
+
+#pragma comment(lib, "SDL2main.lib")
+#pragma comment(lib, "SDL2.lib")
 
 class World;
 
@@ -21,6 +25,7 @@ public:
 
 	void QuitGame() { bRunning = false; }
 
+	Uint64 const GetWorldDeltaSeconds() { return DeltaSeconds; }
 
 	inline static int GetKeyCode() { return Engine::KeyCode; }
 
@@ -28,15 +33,21 @@ public:
 
 	inline World* GetWorld() const { return MyWorld; }
 
+	SDL_Window* MyWindow;
+	SDL_Renderer* MyRenderer;
+	SDL_Event MyEvent;
+	
 
 protected:
 	World* MyWorld;
-
 	static int KeyCode;
 
 	static Engine* Instance;
 
 	bool bRunning;
+
+	Uint64 LastTick;
+	Uint64 DeltaSeconds;
 
 };
 

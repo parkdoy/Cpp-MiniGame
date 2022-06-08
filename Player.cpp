@@ -2,10 +2,18 @@
 #include "Engine.h"
 #include "World.h"
 #include "Goal.h"
+#include "SDL.h"
 
 APlayer::APlayer()
 	: AActor()
 {
+	R = 0;
+	G = 0;
+	B = 255;
+
+	ColorKey = SDL_Color{ 255,0,255,0 };
+
+	LoadBMP("Data/test.bmp");
 }
 
 APlayer::~APlayer()
@@ -16,31 +24,72 @@ APlayer::~APlayer()
 APlayer::APlayer(int NewX, int NewY, char NewShape, bool bNewCollision, int NewSortOrder)
 	: AActor(NewX, NewY, NewShape, bNewCollision, NewSortOrder)
 {
+	R = 0;
+	G = 0;
+	B = 255;
+	ColorKey = SDL_Color{ 255,0,255,0 };
+	LoadBMP("Data/test.bmp");
 }
 
 void APlayer::Tick()
 {
-	int KeyCode = Engine::GetKeyCode();
-
-	switch (KeyCode)
+	ElapsedTime += GEngine->GetWorldDeltaSeconds();
+	if (ElapsedTime >= ProcessTime)
 	{
-	case 'w':
-		Y = (PredictCollision(X, Y - 1) == false) ? Y - 1 : Y;
-		break;
-	case 's':
-		Y = (PredictCollision(X, Y + 1) == false) ? Y + 1 : Y;
-		break;
-	case 'a':
-		X = (PredictCollision(X - 1, Y) == false) ? X - 1 : X;
-		break;
-	case 'd':
-		X = (PredictCollision(X + 1, Y) == false) ? X + 1 : X;
-		break;
+		SpriteIndex++;
+		SpriteIndex = SpriteIndex % 5;
+		ElapsedTime = 0;
 	}
+		switch (GEngine->MyEvent.type)
+		{
+		case SDL_QUIT:
+			GEngine->QuitGame();
+			break;
+		case SDL_KEYDOWN:
+			switch (GEngine->MyEvent.key.keysym.sym) 
+			{
+			case SDLK_w:
+				Y = (PredictCollision(X, Y - 1) == false) ? Y - 1 : Y;
+				SpriteDirection = 2;
+				break;
+			case SDLK_s:
+				Y = (PredictCollision(X, Y + 1) == false) ? Y + 1 : Y;
+				SpriteDirection = 3;
+				break;
+			case SDLK_a:
+				X = (PredictCollision(X - 1, Y) == false) ? X - 1 : X;
+				SpriteDirection = 0;
+				break;
+			case SDLK_d:
+				X = (PredictCollision(X + 1, Y) == false) ? X + 1 : X;
+				SpriteDirection = 1;
+				break;
+			}
+		}
 
 	if (IsGoal())
 	{
 		GEngine->QuitGame();
+	}
+}
+
+void APlayer::Render()
+{
+	if (Texture == nullptr)
+	{
+		SDL_SetRenderDrawColor(GEngine->MyRenderer, R, G, B, A);
+		SDL_RenderFillRect(GEngine->MyRenderer, new SDL_Rect{ X * Size,Y * Size,Size,Size });
+	}
+	else
+	{
+
+		int SpriteWidth = Image->w / 5;
+		int SpriteHeight = Image->h / 5;
+
+		SDL_Rect SourceRect{ SpriteIndex * SpriteWidth,SpriteDirection * SpriteHeight, SpriteWidth,SpriteHeight };
+
+		//VRAM ±×·Á¶ó
+		SDL_RenderCopy(GEngine->MyRenderer, Texture,&SourceRect, new SDL_Rect{ X * Size,Y * Size,Size,Size });
 	}
 }
 

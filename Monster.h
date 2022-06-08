@@ -10,5 +10,14 @@ public:
 	AMonster(int NewX, int NewY, char NewShape, bool bNewCollision = false, int NewSortOrder = 5);
 
 	virtual void Tick() override;
+
+	bool IsPlayer();
+
+	Uint64 ElapsedTimeMon = 0;
+	Uint64 ProcessTimeMon = 300;
+	
+	int MonsterMove = 0;
+
+
 };
 

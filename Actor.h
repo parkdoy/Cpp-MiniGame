@@ -31,6 +31,7 @@ public:
 	
 	virtual void Tick();
 	virtual void Render();
+	virtual void BeginPlay();
 
 	void LoadBMP(string Filename);
 
@@ -43,9 +44,6 @@ public:
 	}
 
 	bool PredictCollision(int PredictX, int PredictY);
-
-	
-
 
 };
 

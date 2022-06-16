@@ -3,7 +3,6 @@
 #include <Windows.h>
 #include "Engine.h"
 #include "World.h"
-#include "SDL.h"
 
 using namespace std;
 
@@ -52,6 +51,10 @@ void AActor::Render()
 		SDL_RenderCopy(GEngine->MyRenderer, Texture, NULL, new SDL_Rect{ X * Size,Y * Size,Size,Size });
 	}
 
+}
+
+void AActor::BeginPlay()
+{
 }
 
 void AActor::LoadBMP(string Filename)
